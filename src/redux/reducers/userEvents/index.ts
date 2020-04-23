@@ -1,6 +1,7 @@
 import { AnyAction } from "redux";
+import { SUCCESS, LoadSuccessAction } from "redux/actions/events";
 
-interface UserEvent {
+export interface UserEvent {
   id: number,
   title: string,
   dateStart: string,
@@ -17,8 +18,19 @@ const initialState: state ={
   allIds: [],
 }
 
-const reducer = (state: state = initialState, action: AnyAction) => {
+const reducer = (state: state = initialState, action: LoadSuccessAction) => {
   switch (action.type) {
+    case SUCCESS: {
+      const { events } = action.payload;
+      return ({
+        ...state,
+        allIds: [...events].map((event) => event.id),
+        byIds: [...events].reduce<state['byIds']>((byIds, event) => {
+          byIds[event.id] = event;
+          return byIds;
+        }, {})
+      })
+    }
     default:
       return state;
   }

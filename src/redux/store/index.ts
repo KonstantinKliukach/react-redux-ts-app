@@ -1,7 +1,9 @@
-import { combineReducers, createStore } from 'redux';
+import { combineReducers, createStore, applyMiddleware } from 'redux';
 
-import userEventsReducer from '../reducers/userEvents';
-import recorderReducer from '../reducers/recorder';
+import thunk from 'redux-thunk';
+
+import userEventsReducer from 'redux/reducers/userEvents';
+import recorderReducer from 'redux/reducers/recorder';
 
 const rootReducer = combineReducers({
   userEvents: userEventsReducer,
@@ -11,6 +13,6 @@ const rootReducer = combineReducers({
 // eslint-disable-next-line no-undef
 export type RootState = ReturnType<typeof rootReducer>;
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 export default store;
