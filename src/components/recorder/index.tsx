@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { startAction, stopAction } from 'redux/actions/recorder';
 import { getStartDate } from 'redux/reducers/recorder';
 import getCountValue from 'utils/getCountValue';
+import { createEvent } from 'redux/actions/events';
 
 const Recorder = () => {
   const dateStart = useSelector(getStartDate);
@@ -20,6 +21,7 @@ const Recorder = () => {
 
   const handleClick = () => {
     if (dateStart) {
+      dispatch(createEvent());
       dispatch(stopAction());
       window.clearInterval(interval.current);
       return;

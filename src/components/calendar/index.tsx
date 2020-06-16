@@ -45,29 +45,27 @@ const Calendar: React.FC = () => {
   const events = useSelector((state: RootState) => state.userEvents.allIds
     .map((id) => state.userEvents.byIds[id]));
 
-  // eslint-disable-next-line no-undef
-  const [days, setDays] = useState<Record<string, UserEvent[]>>({});
-  const [daysSorted, setDaysSorted] = useState<string[]>([]);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(loadEvents());
   }, []);
 
-  useEffect(() => {
-    if (events.length && !daysSorted.length) {
-      // setDays(groupEventsByDay(events));
-      const daysWithEvents = groupEventsByDay(events);
-      setDaysSorted(Object.keys(daysWithEvents).sort((a, b) => +new Date(b) - +new Date(a)));
-      setDays(daysWithEvents);
-    }
-  }, [daysSorted.length, events]);
+  // eslint-disable-next-line no-undef
+  let groupedEvents: ReturnType<typeof groupEventsByDay> | undefined;
+  let sortedGroupKeys: string[] | undefined;
 
-  return daysSorted.length ? (
+  if (events.length) {
+    groupedEvents = groupEventsByDay(events);
+    sortedGroupKeys = Object.keys(groupedEvents).sort(
+      (date1, date2) => +new Date(date2) - +new Date(date1)
+    );
+  }
+
+  return groupedEvents && sortedGroupKeys ? (
     <div className='calendar'>
       {
-        daysSorted.map((day) => {
+        sortedGroupKeys.map((day) => {
           const date = new Date(day);
           return (
             <div className='calendar-day' key={day}>
@@ -76,7 +74,7 @@ const Calendar: React.FC = () => {
               </div>
               <div className='calendar-events'>
                 {
-                  days[day].map((event) => (
+                  groupedEvents![day].map((event) => (
                     <div className='calendar-event' key={event.id}>
                       <div className='calendar-event-info'>
                         <div className='calendar-event-time'>

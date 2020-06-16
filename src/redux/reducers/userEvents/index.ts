@@ -1,5 +1,5 @@
 import { AnyAction } from "redux";
-import { SUCCESS, LoadSuccessAction } from "redux/actions/events";
+import { LOAD_SUCCESS, LoadSuccessAction, ADD_SUCCESS, AddSuccessAction } from "redux/actions/events";
 
 export interface UserEvent {
   id: number,
@@ -18,9 +18,9 @@ const initialState: state ={
   allIds: [],
 }
 
-const reducer = (state: state = initialState, action: LoadSuccessAction) => {
+const reducer = (state: state = initialState, action: LoadSuccessAction | AddSuccessAction) => {
   switch (action.type) {
-    case SUCCESS: {
+    case LOAD_SUCCESS: {
       const { events } = action.payload;
       return ({
         ...state,
@@ -30,6 +30,12 @@ const reducer = (state: state = initialState, action: LoadSuccessAction) => {
           return byIds;
         }, {})
       })
+    }
+    case ADD_SUCCESS: {
+      const { event } = action.payload;
+      return {...state, allIds: [...state.allIds, event.id], byIds: {
+        ...state.byIds, [event.id]: event,
+      }};
     }
     default:
       return state;
