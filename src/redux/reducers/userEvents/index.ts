@@ -1,5 +1,5 @@
 import { AnyAction } from "redux";
-import { LOAD_SUCCESS, LoadSuccessAction, ADD_SUCCESS, AddSuccessAction } from "redux/actions/events";
+import { LOAD_SUCCESS, LoadSuccessAction, ADD_SUCCESS, AddSuccessAction, DeleteSuccessAction, DELETE_SUCCESS } from "redux/actions/events";
 
 export interface UserEvent {
   id: number,
@@ -18,7 +18,7 @@ const initialState: state ={
   allIds: [],
 }
 
-const reducer = (state: state = initialState, action: LoadSuccessAction | AddSuccessAction) => {
+const reducer = (state: state = initialState, action: LoadSuccessAction | AddSuccessAction | DeleteSuccessAction) => {
   switch (action.type) {
     case LOAD_SUCCESS: {
       const { events } = action.payload;
@@ -36,6 +36,18 @@ const reducer = (state: state = initialState, action: LoadSuccessAction | AddSuc
       return {...state, allIds: [...state.allIds, event.id], byIds: {
         ...state.byIds, [event.id]: event,
       }};
+    }
+    case DELETE_SUCCESS: {
+      const { id } = action.payload;
+      const newState:state = {
+        ...state,
+        byIds: {
+          ...state.byIds,
+        },
+        allIds: state.allIds.filter(eventId => eventId != id)
+      }
+      delete newState.byIds[id];
+      return newState;
     }
     default:
       return state;

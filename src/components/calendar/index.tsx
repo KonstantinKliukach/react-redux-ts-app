@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import './index.css';
 import { RootState } from 'redux/store';
-import { loadEvents } from 'redux/actions/events';
+import { loadEvents, deleteEvent } from 'redux/actions/events';
 import { UserEvent } from 'redux/reducers/userEvents';
 import { addZero } from 'utils/getCountValue';
 
@@ -47,6 +47,10 @@ const Calendar: React.FC = () => {
 
   const dispatch = useDispatch();
 
+  const handleDelete = (id: UserEvent['id']): void => {
+    dispatch(deleteEvent(id));
+  }
+
   useEffect(() => {
     dispatch(loadEvents());
   }, []);
@@ -85,7 +89,7 @@ const Calendar: React.FC = () => {
                           {event.title}
                         </div>
                       </div>
-                      <button className='calendar-event-delete-button'>&times;</button>
+                      <button className='calendar-event-delete-button' onClick={() => handleDelete(event.id)}>&times;</button>
                     </div>
                   ))
                 }
