@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import './index.css';
@@ -49,11 +49,11 @@ const Calendar: React.FC = () => {
 
   const handleDelete = (id: UserEvent['id']): void => {
     dispatch(deleteEvent(id));
-  }
+  };
 
   useEffect(() => {
     dispatch(loadEvents());
-  }, []);
+  }, [dispatch]);
 
   // eslint-disable-next-line no-undef
   let groupedEvents: ReturnType<typeof groupEventsByDay> | undefined;
@@ -89,7 +89,7 @@ const Calendar: React.FC = () => {
                           {event.title}
                         </div>
                       </div>
-                      <button className='calendar-event-delete-button' onClick={() => handleDelete(event.id)}>&times;</button>
+                      <button className='calendar-event-delete-button' onClick={(): void => handleDelete(event.id)}>&times;</button>
                     </div>
                   ))
                 }
