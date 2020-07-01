@@ -3,9 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import './index.css';
 import { RootState } from 'redux/store';
-import { loadEvents, deleteEvent } from 'redux/actions/events';
+import { loadEvents } from 'redux/actions/events';
 import { UserEvent } from 'redux/reducers/userEvents';
-import { addZero } from 'utils/getCountValue';
+
+import EvenItem from './EventItem';
 
 function getKeyFromDate(date: string): string {
   return date.slice(0, 10);
@@ -34,22 +35,12 @@ function groupEventsByDay(events: UserEvent[]): Record<string, UserEvent[]> {
   return days;
 }
 
-function getTimeInterval(start: string, end: string): string {
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  return `${addZero(startDate.getHours())}-${addZero(startDate.getMinutes())} : ${addZero(endDate.getHours())}-${addZero(endDate.getMinutes())}`;
-}
-
 
 const Calendar: React.FC = () => {
   const events = useSelector((state: RootState) => state.userEvents.allIds
     .map((id) => state.userEvents.byIds[id]));
 
   const dispatch = useDispatch();
-
-  const handleDelete = (id: UserEvent['id']): void => {
-    dispatch(deleteEvent(id));
-  };
 
   useEffect(() => {
     dispatch(loadEvents());
@@ -78,19 +69,8 @@ const Calendar: React.FC = () => {
               </div>
               <div className='calendar-events'>
                 {
-                  groupedEvents![day].map((event) => (
-                    <div className='calendar-event' key={event.id}>
-                      <div className='calendar-event-info'>
-                        <div className='calendar-event-time'>
-                          {}
-                          {getTimeInterval(event.dateStart, event.dateEnd)}
-                        </div>
-                        <div className='calendar-event-title'>
-                          {event.title}
-                        </div>
-                      </div>
-                      <button className='calendar-event-delete-button' onClick={(): void => handleDelete(event.id)}>&times;</button>
-                    </div>
+                  groupedEvents?.[day].map((event) => (
+                    <EvenItem event={event} key={event.id}/>
                   ))
                 }
               </div>

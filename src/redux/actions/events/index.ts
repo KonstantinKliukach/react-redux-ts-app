@@ -16,46 +16,50 @@ export const DELETE_REQUEST = 'DELETE_REQUEST';
 export const DELETE_SUCCESS = 'DELETE_SUCCESS';
 export const DELETE_FAILURE = 'DELETE_FAILURE';
 
-export interface LoadRequestAction extends Action<typeof LOAD_REQUEST> {}
+export const UPDATE_REQUEST = 'UPDATE_REQUEST';
+export const UPDATE_SUCCESS = 'UPDATE_SUCCESS';
+export const UPDATE_FAILURE = 'UPDATE_FAILURE';
+
+export type LoadRequestAction = Action<typeof LOAD_REQUEST>
 
 export interface LoadSuccessAction extends Action<typeof LOAD_SUCCESS> {
   payload: {
-    events: UserEvent[],
-  }
+    events: UserEvent[];
+  };
 }
 
 export interface LoadFailureAction extends Action<typeof LOAD_FAILURE> {
   payload: {
-    message: string,
-  }
+    message: string;
+  };
 }
 
-export interface AddRequestAction extends Action<typeof ADD_REQUEST> {}
+export type AddRequestAction = Action<typeof ADD_REQUEST>
 
 export interface AddSuccessAction extends Action<typeof ADD_SUCCESS> {
   payload: {
-    event: UserEvent,
-  }
+    event: UserEvent;
+  };
 }
 
 export interface AddFailureAction extends Action<typeof ADD_FAILURE> {
   payload: {
-    message: string,
-  }
+    message: string;
+  };
 }
 
-export interface DeleteRequestAction extends Action<typeof DELETE_REQUEST> {}
+export type DeleteRequestAction = Action<typeof DELETE_REQUEST>
 
 export interface DeleteSuccessAction extends Action<typeof DELETE_SUCCESS> {
   payload: {
-    id: UserEvent['id'],
-  }
+    id: UserEvent['id'];
+  };
 }
 
 export interface DeleteFailureAction extends Action<typeof DELETE_FAILURE> {
   payload: {
-    message: string,
-  }
+    message: string;
+  };
 }
 
 export const createEvent = (): ThunkAction<
@@ -125,7 +129,7 @@ LoadRequestAction | LoadSuccessAction | LoadFailureAction
 };
 
 
-export const deleteEvent = (id:UserEvent['id']): ThunkAction<
+export const deleteEvent = (id: UserEvent['id']): ThunkAction<
 void,
 RootState,
 undefined,
@@ -136,20 +140,68 @@ DeleteRequestAction | DeleteSuccessAction | DeleteFailureAction
   });
   try {
     const response = await fetch(`http://localhost:3001/events/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
     if (response.ok) {
       dispatch({
         type: DELETE_SUCCESS,
         payload: {
-          id
-        }
-      })
+          id,
+        },
+      });
     }
   } catch (error) {
     dispatch({
       type: DELETE_FAILURE,
       payload: { message: 'Failed to delete events' },
+    });
+  }
+};
+
+export type UpdateRequestAction = Action<typeof UPDATE_REQUEST>
+
+export interface UpdateSuccessAction extends Action<typeof UPDATE_SUCCESS> {
+  payload: {
+    event: UserEvent;
+  };
+}
+
+export interface UpdatedFailureAction extends Action<typeof UPDATE_FAILURE> {
+  payload: {
+    message: string;
+  };
+}
+
+export const updateEvent = (event: UserEvent): ThunkAction<
+void,
+RootState,
+undefined,
+UpdateRequestAction | UpdateSuccessAction | UpdatedFailureAction
+> => async (dispatch) => {
+  dispatch({
+    type: UPDATE_REQUEST,
+  });
+  try {
+    const response = await fetch(`http://localhost:3001/events/${event.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(event),
+    });
+    if (response.ok) {
+      const updatedEvent: UserEvent = await response.json();
+      dispatch({
+        type: UPDATE_SUCCESS,
+        payload: {
+          event: updatedEvent,
+        },
+      });
+    }
+  } catch (error) {
+    dispatch({
+      type: UPDATE_FAILURE,
+      payload: { message: 'Failed to update event' },
     });
   }
 };
